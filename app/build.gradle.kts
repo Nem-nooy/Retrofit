@@ -50,6 +50,12 @@ dependencies {
     // NOTE: observeAsState 사용하기 위해 추가
     implementation("androidx.compose.runtime:runtime-livedata:1.7.5")
 
+    // NOTE: AsyncImage 사용하기 위해 추가
+    //implementation("io.coil-kt.coil3:coil-compose:3.0.4")
+    implementation("io.coil-kt.coil3:coil-compose:3.0.4")
+    //implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.4")
+    implementation("io.coil-kt.coil3:coil-network-okhttp:3.0.4")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
