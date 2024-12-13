@@ -4,7 +4,9 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -32,9 +34,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
@@ -83,14 +88,20 @@ fun SongList(list: List<Song>, modifier: Modifier) {
 
 @Composable
 fun SongItem(song: Song) {
+    var (expanded, setExpanded) = remember { mutableStateOf(false) }
+
     Card(
+        modifier = Modifier
+            .clickable {
+                setExpanded(!expanded)
+            },
         elevation = CardDefaults.cardElevation(8.dp)    // 그림자 효과
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(IntrinsicSize.Min)
-                .background(Color(255, 210, 210))
+                //.background(Color(255, 210, 210))
                 .padding(8.dp)
         ) {
             AsyncImage(
@@ -113,6 +124,17 @@ fun SongItem(song: Song) {
             ) {
                 TextTitle(song.title)
                 TextSinger(song.singer)
+            }
+        }
+        AnimatedVisibility(
+            visible = expanded,
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            song.lyrics?.let {
+                Text(
+                    it.replace("\\n", "\n"),
+                    textAlign = TextAlign.Center
+                )
             }
         }
     }
