@@ -42,6 +42,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import coil3.compose.AsyncImage
 
 class MainActivity : ComponentActivity() {
@@ -58,98 +61,26 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen(viewModel: SongViewModel = viewModel()) {
-    val songList by viewModel.songList.observeAsState(emptyList())
+    val navController = rememberNavController()
+
     Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-        SongList(
-            list = songList,
-            modifier = Modifier.padding(innerPadding)
-        )
-    }
-}
 
-@Composable
-fun SongList(list: List<Song>, modifier: Modifier) {
-    LazyColumn(
-        modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        contentPadding = PaddingValues(horizontal = 8.dp),
-    ) {
-//        item {
-//            Text("Header")
-//        }
-        items(list) { song ->
-            SongItem(song)
-        }
-//        item {
-//            Text("Footer")
-//        }
-    }
-}
-
-@Composable
-fun SongItem(song: Song) {
-    var (expanded, setExpanded) = remember { mutableStateOf(false) }
-
-    Card(
-        modifier = Modifier
-            .clickable {
-                setExpanded(!expanded)
-            },
-        elevation = CardDefaults.cardElevation(8.dp)    // 그림자 효과
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(IntrinsicSize.Min)
-                //.background(Color(255, 210, 210))
-                .padding(8.dp)
+        NavHost(
+            navController = navController,
+            //startDestination = SongScreen.Singer.name,
+            startDestination = SongScreen.Song.name,
+            modifier = Modifier.padding(innerPadding),
         ) {
-            AsyncImage(
-                model = "https://picsum.photos/300/300?random=${song.singer}",
-                contentDescription = "가수 이미지 ${song.singer}",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(100.dp)
-                    .clip(RoundedCornerShape(percent = 10)),
-            )
-            Spacer(modifier = Modifier.width(10.dp))
-            Column(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .background(Color(0xffffffcc))      // 밝은 노란색
-//                .padding(16.dp)
-                modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.SpaceAround
-            ) {
-                TextTitle(song.title)
-                TextSinger(song.singer)
+            composable(route = SongScreen.Singer.name) {
+                SingerList()
             }
-        }
-        AnimatedVisibility(
-            visible = expanded,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            song.lyrics?.let {
-                Text(
-                    it.replace("\\n", "\n"),
-                    textAlign = TextAlign.Center
-                )
+            composable(route = SongScreen.Song.name) {
+                SongList()
+            }
+            composable(route = SongScreen.SongDetail.name) {
+                SongDetail()
             }
         }
     }
 }
 
-@Composable
-fun TextTitle(title: String) {
-    Text(
-        title,
-        fontSize = 30.sp,
-        lineHeight = 35.sp
-    )
-}
-
-@Composable
-fun TextSinger(singer: String) {
-    Text(singer, fontSize = 20.sp)
-}
